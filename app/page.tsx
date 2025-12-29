@@ -1,66 +1,65 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+// app/page.tsx
+import { requireAuth } from "@/lib/auth";
+import { getAllBarang, searchBarang } from "@/lib/db";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: { q?: string };
+}) {
+  try {
+    await requireAuth();
+  } catch (error) {
+    redirect("/login");
+  }
+
+  const query = searchParams.q || "";
+  const barangList = query ? await searchBarang(query) : await getAllBarang();
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="container">
+      <h1 className="page-title">📦 Katalog Barang</h1>
+
+      <div className="search-box">
+        <form method="GET">
+          <input
+            type="text"
+            name="q"
+            placeholder="Cari barang..."
+            defaultValue={query}
+          />
+          <button type="submit">🔍 Cari</button>
+        </form>
+      </div>
+
+      {barangList.length === 0 ? (
+        <div className="empty-state">
+          <h3>Tidak ada barang ditemukan</h3>
+          <p>Coba cari dengan kata kunci lain</p>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      ) : (
+        <div className="catalog-grid">
+          {barangList.map((barang) => (
+            <div key={barang.id} className="catalog-item">
+              <h3>{barang.nama}</h3>
+              <p className="jenis">Jenis: {barang.jenis}</p>
+              <p className="stok">
+                Stok: {barang.stok} {barang.satuan}
+              </p>
+              <div className="actions">
+                <Link href={`/cart?barang_id=${barang.id}`} className="btn btn-primary">
+                  🛒 Pesan
+                </Link>
+                <Link href={`/request?barang_id=${barang.id}`} className="btn btn-secondary">
+                  📥 Request
+                </Link>
+              </div>
+            </div>
+          ))}
         </div>
-      </main>
+      )}
     </div>
   );
 }
