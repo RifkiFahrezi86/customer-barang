@@ -1,22 +1,25 @@
-// app/login/page.tsx
+// customer-web/app/login/page.tsx
 import { loginCustomer } from "@/lib/actions";
-import { getCustomerId } from "@/lib/auth";
+import { getCustomer } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
 export default async function LoginPage() {
-  const customerId = await getCustomerId();
-
-  if (customerId) {
-    redirect("/");
+  const customer = await getCustomer();
+  
+  // Jika sudah login, redirect ke katalog
+  if (customer) {
+    redirect("/katalog");
   }
 
   return (
-    <div className="login-wrapper">
-      <div className="login-card">
-        <h1>Login Customer</h1>
-        <p>Masuk untuk memesan barang</p>
+    <div className="login-container">
+      <div className="login-box">
+        <div className="login-header">
+          <h1>🏪 Gudang Barang</h1>
+          <p>Portal Customer</p>
+        </div>
 
-        <form action={loginCustomer}>
+        <form action={loginCustomer} className="login-form">
           <div className="form-group">
             <label htmlFor="email">Email</label>
             <input
@@ -39,14 +42,14 @@ export default async function LoginPage() {
             />
           </div>
 
-          <button type="submit" className="btn btn-primary" style={{ width: "100%", marginTop: "16px" }}>
-            Masuk
+          <button type="submit" className="btn-login">
+            Login
           </button>
         </form>
 
-        <p style={{ marginTop: "20px", fontSize: "14px", color: "#94a3b8", textAlign: "center" }}>
-          Hanya untuk customer terdaftar
-        </p>
+        <div className="login-footer">
+          <p>Demo Account: customer1@example.com / password123</p>
+        </div>
       </div>
     </div>
   );

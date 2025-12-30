@@ -1,12 +1,11 @@
-// app/layout.tsx
-import { getCustomerId, getCustomerName } from "@/lib/auth";
-import { logoutCustomer } from "@/lib/actions";
-import Link from "next/link";
-import "../public/styles/globals.css";
+// customer-web/app/layout.tsx
+import "@/styles/globals.css";
+import { getCustomer } from "@/lib/auth";
+import Navbar from "./components/Navbar";
 
 export const metadata = {
-  title: "Customer Web - Gudang Barang",
-  description: "Portal customer untuk memesan barang",
+  title: "Customer Portal - Gudang Barang",
+  description: "Portal untuk customer memesan dan request barang",
 };
 
 export default async function RootLayout({
@@ -14,31 +13,13 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const customerId = await getCustomerId();
-  const customerName = await getCustomerName();
+  const customer = await getCustomer();
 
   return (
     <html lang="id">
       <body>
-        {customerId && (
-          <nav className="navbar">
-            <div className="brand">🏪 Gudang Barang</div>
-            <nav>
-              <Link href="/">Katalog</Link>
-              <Link href="/orders">Pesanan Saya</Link>
-              <Link href="/request">Request Barang</Link>
-            </nav>
-            <div className="user-info">
-              {customerName} |{" "}
-              <form action={logoutCustomer} className="logout-form">
-                <button type="submit" className="logout-btn">
-                  Logout
-                </button>
-              </form>
-            </div>
-          </nav>
-        )}
-        {children}
+        {customer && <Navbar />}
+        <main className="main-content">{children}</main>
       </body>
     </html>
   );

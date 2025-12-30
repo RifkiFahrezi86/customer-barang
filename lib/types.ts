@@ -1,4 +1,4 @@
-// lib/types.ts
+// customer-web/lib/types.ts
 export type Barang = {
   id: string;
   nama: string;
@@ -14,7 +14,8 @@ export type Order = {
   jenis: string;
   jumlah: number;
   tanggal: string;
-  tujuan?: string;
+  tujuan: string;
+  catatan?: string;
   status: "pending" | "approved" | "rejected";
 };
 
@@ -25,7 +26,14 @@ export type RequestBarang = {
   jenis: string;
   jumlah: number;
   tanggal: string;
-  sumber?: string;
+  sumber: string;
   catatan?: string;
   status: "pending" | "approved" | "rejected";
+};
+
+export type Customer = {
+  id: string;
+  name: string;
+  email: string;
+  role: "customer";
 };

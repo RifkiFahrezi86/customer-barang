@@ -1,22 +1,25 @@
-// lib/auth.ts
+// customer-web/lib/auth.ts
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-export async function getCustomerId(): Promise<string | null> {
+export async function getCustomer() {
   const cookieStore = await cookies();
   const customerId = cookieStore.get("customer_id")?.value;
-  return customerId || null;
-}
-
-export async function getCustomerName(): Promise<string | null> {
-  const cookieStore = await cookies();
   const customerName = cookieStore.get("customer_name")?.value;
-  return customerName || null;
+
+  if (!customerId || !customerName) {
+    return null;
+  }
+
+  return { id: customerId, name: customerName };
 }
 
-export async function requireAuth() {
-  const customerId = await getCustomerId();
-  if (!customerId) {
-    throw new Error("Unauthorized");
+export async function requireCustomer() {
+  const customer = await getCustomer();
+  
+  if (!customer) {
+    redirect("/login");
   }
-  return customerId;
+
+  return customer.name;
 }
